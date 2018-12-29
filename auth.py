@@ -2,15 +2,26 @@ import spotipy
 import sys
 import spotipy.util as util
 
-def get_tracks(user):
+def get_tracks():
+	if len(sys.argv) > 1:
+		username = sys.argv[1]
+	else:
+		print 'Usage: %s username' % (sys.argv[0])
+		sys.exit()
+	
+	id_ = '481ac8972cbe40cca942de2fe72ceb57'
+	secret_ = '6e4286b931b4408b98addea1d581ed35' 
+	uri_ = 'http://localhost:3000/callback/'
 	scope = 'user-top-read'
-	token = util.prompt_for_user_token(user, scope, client_id=' 481ac8972cbe40cca942de2fe72ceb57', client_secret='6e4286b931b4408b98addea1d581ed35')
+	token = util.prompt_for_user_token(username, scope, client_id=id_, client_secret=secret_,redirect_uri=uri_)
 	
 	if token:
 		sp = spotipy.Spotify(auth=token)
 		results = sp.current_user_top_tracks(limit=25,time_range='short_term')
+		print [str(track['name']) for track in results['items']]
+		return set([track['id'] for track in results['items']])
 	else:
 		print "Unable to get auth token for %s" % user
 
-def generate_playlist(users)
-
+if __name__ == '__main__':
+	get_tracks()
